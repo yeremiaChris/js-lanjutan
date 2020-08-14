@@ -1,0 +1,23 @@
+[
+    {
+        "nama": "yeremia",
+        "nrp": "043040023",
+        "email": "yeremia@gmail.com",
+        "jurusan": "sistem informasi",
+        "idDosenWali": 1
+    },
+    {
+        "nama": "angga",
+        "nrp": "043040023",
+        "email": "angga@gmail.com",
+        "jurusan": "sistem informasi",
+        "idDosenWali": 1
+    },
+    {
+        "nama": "alex",
+        "nrp": "043040023",
+        "email": "alex@gmail.com",
+        "jurusan": "sistem informasi",
+        "idDosenWali": 1
+    }
+]
