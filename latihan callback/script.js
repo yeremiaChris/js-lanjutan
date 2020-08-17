@@ -42,50 +42,120 @@
 
 // menggunakan fetch
 
-const searchButton = document.querySelector('.search-button');
-searchButton.addEventListener('click', function() {
+// const searchButton = document.querySelector('.search-button');
+// searchButton.addEventListener('click', function() {
 
+//     const inputKeyword = document.querySelector('.input-keyword');
+//     fetch('http://www.omdbapi.com/?apikey=c7854a79&s=' + inputKeyword.value)
+//     // kita belum bisa liat jika kita hanya menulis seperti dibawah
+//         // .then(response => console.log(response));
+//         // makanya dibikin json agar bentuknya json
+//         // .then(response => console.log(response.json()));
+//         // tapi karna hasil itu adalah promise dan kita mau menjalankannya secara asynchrounous 
+//         // makan response.jsonnya harus kita jalankan lagi thennya.
+//         .then(response => response.json())
+//         .then(response => {
+//             const movies = response.Search;
+//             let cards = '';
+//             movies.forEach(m => cards += showCards(m));
+
+//             const movieContainer = document.querySelector('.movie-container');
+//             movieContainer.innerHTML = cards;
+
+
+//             const modalDetailButton = document.querySelectorAll('.modal-detail-button');
+//             // karena modaldetailbutton itu banyak makanya pake selectorall 
+//             // dan bentuknya adalah array atau nodelist
+//             // makanya sebelum dikasi eventlisetener harus di looping terlebih dahulu
+//             // pake foreach
+//             modalDetailButton.forEach(btn => {
+//                 btn.addEventListener('click', function () {
+//                     // cari dataset yang nama datasetnya imdbid
+//                     const imdbid = this.dataset.imdbid;
+//                     fetch('http://www.omdbapi.com/?apikey=c7854a79&i=' +imdbid)
+//                         .then(response => response.json())
+//                         .then(m => {
+//                             const movieDetail = showDetail(m);
+//                             const movieContainer = document.querySelector('.modal-body')
+//                             movieContainer.innerHTML = movieDetail;
+//                         });
+//                 })
+//             });
+//         });
+
+    
+        
+// });
+
+
+
+
+
+
+
+const searchButton = document.querySelector('.search-button');
+
+                                        // jadi async itu memberitahukan bahwa didalam function itu ada
+                                        // keyword yang asynchronous 
+                                        // tapi kita juga harus memberitahu function mana yang ada promise dan 
+                                        // harus di tunggu sampai resolve
+searchButton.addEventListener('click', async function() {
     const inputKeyword = document.querySelector('.input-keyword');
-    fetch('http://www.omdbapi.com/?apikey=c7854a79&s=' + inputKeyword.value)
-    // kita belum bisa liat jika kita hanya menulis seperti dibawah
-        // .then(response => console.log(response));
-        // makanya dibikin json agar bentuknya json
-        // .then(response => console.log(response.json()));
-        // tapi karna hasil itu adalah promise dan kita mau menjalankannya secara asynchrounous 
-        // makan response.jsonnya harus kita jalankan lagi thennya.
+
+    const movies = await getMovies(inputKeyword.value);
+    updateUI(movies);
+});
+
+
+
+
+// Event binding 
+// mengasi event ke element yang awalnya belum ada tetapi ketika dia ada eventnya tetap bisa jalan
+document.addEventListener('click', async function(e) {
+    if(e.target.classList.contains('modal-detail-button')) {
+        // console.log('ok');
+        const imdbid = e.target.dataset.imdbid;
+        const movieDetail = await getMovieDetail(imdbid);
+        updateUIDetail(movieDetail)
+    }
+});
+
+
+function getMovieDetail(imdbid) {
+    return fetch('http://www.omdbapi.com/?apikey=c7854a79&i=' + imdbid)
+            .then(response => response.json())
+            .then(m => m);
+
+}
+
+function updateUIDetail(m) {
+    const movieDetail = showDetail(m);
+    const movieContainer = document.querySelector('.modal-body')
+    movieContainer.innerHTML = movieDetail;
+}
+
+
+
+function getMovies(keyword) {
+
+    return fetch('http://www.omdbapi.com/?apikey=c7854a79&s=' + keyword)
         .then(response => response.json())
-        .then(response => {
-            const movies = response.Search;
-            let cards = '';
+        .then(response => response.Search);
+}   
+
+
+function updateUI(movies) {
+    let cards = '';
             movies.forEach(m => cards += showCards(m));
 
             const movieContainer = document.querySelector('.movie-container');
             movieContainer.innerHTML = cards;
+};
 
 
-            const modalDetailButton = document.querySelectorAll('.modal-detail-button');
-            // karena modaldetailbutton itu banyak makanya pake selectorall 
-            // dan bentuknya adalah array atau nodelist
-            // makanya sebelum dikasi eventlisetener harus di looping terlebih dahulu
-            // pake foreach
-            modalDetailButton.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    // cari dataset yang nama datasetnya imdbid
-                    const imdbid = this.dataset.imdbid;
-                    fetch('http://www.omdbapi.com/?apikey=c7854a79&i=' +imdbid)
-                        .then(response => response.json())
-                        .then(m => {
-                            const movieDetail = showDetail(m);
-                            const movieContainer = document.querySelector('.modal-body')
-                            movieContainer.innerHTML = movieDetail;
-                        });
-                })
-            });
-        });
 
-    
-        
-});
+
+
 
 
 
@@ -127,3 +197,5 @@ function showDetail(m) {
                 </div>
             </div>`
 }
+
+
