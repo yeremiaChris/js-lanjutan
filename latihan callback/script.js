@@ -100,11 +100,54 @@ const searchButton = document.querySelector('.search-button');
                                         // tapi kita juga harus memberitahu function mana yang ada promise dan 
                                         // harus di tunggu sampai resolve
 searchButton.addEventListener('click', async function() {
-    const inputKeyword = document.querySelector('.input-keyword');
 
-    const movies = await getMovies(inputKeyword.value);
-    updateUI(movies);
+    try {
+        const inputKeyword = document.querySelector('.input-keyword');
+    
+        const movies = await getMovies(inputKeyword.value);
+        updateUI(movies);
+    } catch(err) {
+        // console.log(err);
+        alert(err)
+    }
 });
+
+
+function getMovies(keyword) {
+
+    return fetch('http://www.omdbapi.com/?apikey=c7854a79&s=' + keyword)
+        .then(response => {
+            // response.ok === false ini sama dengan yang tanda seru dibawah
+            if(!response.ok) {
+
+                // keyword error
+                throw new Error(response.statusText);
+            }
+
+            // jadi kalo ok yang dikerjakan yang dibawah kalo tidak yang diatas
+
+            return response.json();
+        })
+        .then(response => {
+            if(response.Response === "False") {
+                throw new error(response.Error);
+            }
+            // console.log(response.Search);
+            return response.Search;
+        });
+}
+
+
+function updateUI(movies) {
+    let cards = '';
+    movies.forEach(m => cards += showCards(m));
+
+    const movieContainer = document.querySelector('.movie-container');
+    movieContainer.innerHTML = cards;
+};
+
+
+
 
 
 
@@ -119,6 +162,11 @@ document.addEventListener('click', async function(e) {
         updateUIDetail(movieDetail)
     }
 });
+
+
+
+
+
 
 
 function getMovieDetail(imdbid) {
@@ -136,21 +184,6 @@ function updateUIDetail(m) {
 
 
 
-function getMovies(keyword) {
-
-    return fetch('http://www.omdbapi.com/?apikey=c7854a79&s=' + keyword)
-        .then(response => response.json())
-        .then(response => response.Search);
-}   
-
-
-function updateUI(movies) {
-    let cards = '';
-            movies.forEach(m => cards += showCards(m));
-
-            const movieContainer = document.querySelector('.movie-container');
-            movieContainer.innerHTML = cards;
-};
 
 
 
