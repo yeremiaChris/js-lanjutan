@@ -1,42 +1,93 @@
-$('.search-button').on('click', function() {
-    $.ajax({
-        // .val itu jadi maksudnya adalah
-        // jquery mencarikan kita kelas input keyword dan mengambil apapun value atau nilai inputannya
-        url: 'http://www.omdbapi.com/?apikey=c7854a79&s=' + $('.input-keyword').val(),
-        success: result => {
-            const movie = result.Search;
-            // looping membuat movie nya kedalam card
+// $('.search-button').on('click', function() {
+//     $.ajax({
+//         // .val itu jadi maksudnya adalah
+//         // jquery mencarikan kita kelas input keyword dan mengambil apapun value atau nilai inputannya
+//         url: 'http://www.omdbapi.com/?apikey=c7854a79&s=' + $('.input-keyword').val(),
+//         success: result => {
+//             const movie = result.Search;
+//             // looping membuat movie nya kedalam card
+//             let cards = '';
+//             movie.forEach(m => {
+//                 cards +=    showCards(m);
+//             });
+    
+//             $('.movie-container').html(cards);
+    
+//             // ketika di klik kita mengirim ajax sambil ngirim data imdb id
+    
+//             $('.modal-detail-button').on('click', function() {
+//                 console.log($(this).data('imdbid'));
+    
+    
+//                 $.ajax({
+//                     url: 'http://www.omdbapi.com/?apikey=c7854a79&i=' + $(this).data('imdbid'),
+//                     success: m => {
+//                         const movieDetail = showDetail(m);
+    
+//                             $('.modal-body').html(movieDetail)
+//                     },
+//                     error: (e) => {
+//                         console.log(e.responseText);
+//                     }
+//                 })
+//             });
+//         },
+//         error: (e) => {
+//             console.log(e.responseText);
+//         }
+//     });
+// })
+
+
+
+// menggunakan fetch
+
+const searchButton = document.querySelector('.search-button');
+searchButton.addEventListener('click', function() {
+
+    const inputKeyword = document.querySelector('.input-keyword');
+    fetch('http://www.omdbapi.com/?apikey=c7854a79&s=' + inputKeyword.value)
+    // kita belum bisa liat jika kita hanya menulis seperti dibawah
+        // .then(response => console.log(response));
+        // makanya dibikin json agar bentuknya json
+        // .then(response => console.log(response.json()));
+        // tapi karna hasil itu adalah promise dan kita mau menjalankannya secara asynchrounous 
+        // makan response.jsonnya harus kita jalankan lagi thennya.
+        .then(response => response.json())
+        .then(response => {
+            const movies = response.Search;
             let cards = '';
-            movie.forEach(m => {
-                cards +=    showCards(m);
-            });
-    
-            $('.movie-container').html(cards);
-    
-            // ketika di klik kita mengirim ajax sambil ngirim data imdb id
-    
-            $('.modal-detail-button').on('click', function() {
-                console.log($(this).data('imdbid'));
-    
-    
-                $.ajax({
-                    url: 'http://www.omdbapi.com/?apikey=c7854a79&i=' + $(this).data('imdbid'),
-                    success: m => {
-                        const movieDetail = showDetail(m);
-    
-                            $('.modal-body').html(movieDetail)
-                    },
-                    error: (e) => {
-                        console.log(e.responseText);
-                    }
+            movies.forEach(m => cards += showCards(m));
+
+            const movieContainer = document.querySelector('.movie-container');
+            movieContainer.innerHTML = cards;
+
+
+            const modalDetailButton = document.querySelectorAll('.modal-detail-button');
+            // karena modaldetailbutton itu banyak makanya pake selectorall 
+            // dan bentuknya adalah array atau nodelist
+            // makanya sebelum dikasi eventlisetener harus di looping terlebih dahulu
+            // pake foreach
+            modalDetailButton.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    // cari dataset yang nama datasetnya imdbid
+                    const imdbid = this.dataset.imdbid;
+                    fetch('http://www.omdbapi.com/?apikey=c7854a79&i=' +imdbid)
+                        .then(response => response.json())
+                        .then(m => {
+                            const movieDetail = showDetail(m);
+                            const movieContainer = document.querySelector('.modal-body')
+                            movieContainer.innerHTML = movieDetail;
+                        });
                 })
             });
-        },
-        error: (e) => {
-            console.log(e.responseText);
-        }
-    });
-})
+        });
+
+    
+        
+});
+
+
 
 
 
